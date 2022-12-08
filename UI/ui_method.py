@@ -11,8 +11,8 @@ class ui_method(object):
         tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         # 列宽
         tableWidget.horizontalHeader().resizeSection(0, 30)
-        tableWidget.horizontalHeader().resizeSection(1, 250)
-        tableWidget.horizontalHeader().resizeSection(2, 100)
+        tableWidget.horizontalHeader().resizeSection(1, 220)
+        tableWidget.horizontalHeader().resizeSection(2, 80)
         tableWidget.horizontalHeader().resizeSection(3, 80)
         tableWidget.horizontalHeader().resizeSection(4, 50)
         tableWidget.horizontalHeader().resizeSection(5, 150)
