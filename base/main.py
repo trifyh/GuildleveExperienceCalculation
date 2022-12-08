@@ -16,6 +16,7 @@ class MainLoop(QWidget):
         self.setWindowIcon(QIcon('icon.ico'))
         self.show()
 
+    """
     def closeEvent(self, event):
 
         reply = QMessageBox.question(self, '提示', "作者海柊月 报个bug：934472842\n"
@@ -25,6 +26,7 @@ class MainLoop(QWidget):
             event.accept()
         else:
             event.ignore()
+    """
 
 
 if __name__ == '__main__':
