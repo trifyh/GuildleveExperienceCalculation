@@ -476,7 +476,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "理符计算器"))
+        Dialog.setWindowTitle(_translate("Dialog", "理符经验计算器  by海柊月  提个bug：934472842"))
         self.kemu.setText(_translate("Dialog", "刻木匠"))
         self.duantie.setText(_translate("Dialog", "锻铁匠"))
         self.zhujia.setText(_translate("Dialog", "铸甲匠"))
