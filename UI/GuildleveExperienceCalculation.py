@@ -161,8 +161,8 @@ class Ui_Dialog(object):
         intValidator = QIntValidator()
         # 列宽
         self.tableWidget_3.horizontalHeader().resizeSection(0, 30)
-        self.tableWidget_3.horizontalHeader().resizeSection(1, 250)
-        self.tableWidget_3.horizontalHeader().resizeSection(2, 100)
+        self.tableWidget_3.horizontalHeader().resizeSection(1, 200)
+        self.tableWidget_3.horizontalHeader().resizeSection(2, 80)
         self.tableWidget_3.horizontalHeader().resizeSection(3, 80)
         self.tableWidget_3.horizontalHeader().resizeSection(4, 50)
         self.tableWidget_3.horizontalHeader().resizeSection(5, 150)
