@@ -161,20 +161,26 @@ class Ui_Dialog(object):
         intValidator = QIntValidator()
         # 列宽
         self.tableWidget_3.horizontalHeader().resizeSection(0, 30)
-        self.tableWidget_3.horizontalHeader().resizeSection(1, 200)
-        self.tableWidget_3.horizontalHeader().resizeSection(2, 80)
+        self.tableWidget_3.horizontalHeader().resizeSection(1, 175)
+        self.tableWidget_3.horizontalHeader().resizeSection(2, 60)
         self.tableWidget_3.horizontalHeader().resizeSection(3, 80)
         self.tableWidget_3.horizontalHeader().resizeSection(4, 50)
         self.tableWidget_3.horizontalHeader().resizeSection(5, 150)
         # self.tableWidget_3.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.tableWidget_2.horizontalHeader().resizeSection(0, 30)
-        self.tableWidget_2.horizontalHeader().resizeSection(1, 222)
-        self.tableWidget_2.horizontalHeader().resizeSection(2, 80)
-        self.tableWidget_2.horizontalHeader().resizeSection(5, 120)
+        self.tableWidget_2.horizontalHeader().resizeSection(0, 30)      # 等级
+        self.tableWidget_2.horizontalHeader().resizeSection(1, 250)     # 理符名称
+        self.tableWidget_2.horizontalHeader().resizeSection(2, 130)      # 接取位置
+        self.tableWidget_2.horizontalHeader().resizeSection(3, 100)      # 经验
+        self.tableWidget_2.horizontalHeader().resizeSection(4, 80)      # 金币
+        self.tableWidget_2.horizontalHeader().resizeSection(5, 120)      # 道具名字
+        self.tableWidget_2.horizontalHeader().resizeSection(6, 60)      # 道具数量
+        self.tableWidget_2.horizontalHeader().resizeSection(7, 60)      # 理符数量
         # self.tableWidget_2.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
         # 不可编辑
         # self.tableWidget_3.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        # +默认不可选中
+        self.pushButton_8.setEnabled(False)
 
         # 设置选择职业按钮后的操作
         self.now_job = ''
@@ -203,7 +209,7 @@ class Ui_Dialog(object):
         # 理符+
         self.textEdit_3.setText('1')
         self.pushButton_8.clicked.connect(lambda: self.add_checked_lifu(self.textEdit_3.toPlainText()))
-        print(self.textEdit_3.toPlainText())
+        # print(self.textEdit_3.toPlainText())
 
         # 等级和进度条初始化
         self.textEdit.setText('1')
@@ -220,7 +226,6 @@ class Ui_Dialog(object):
         self.gil = 0
         # 减号按钮 问就是没做
         self.pushButton_9.setVisible(False)
-        # self.alert_message('关于', '作者：海柊月@宇宙和音\n有bug或者建议反馈934472842')
 
     def load_lifu_xlsx(self, table, job, sheet):
         """加载理符xlsx"""
@@ -302,7 +307,7 @@ class Ui_Dialog(object):
     def get_table_check(self, row, col):
         """读取选中行 进self.check_lifu"""
         self.check_lifu = []
-
+        self.pushButton_8.setEnabled(True)
         try:
             for i in range(6):
                 content = self.tableWidget_3.item(row, i).text()
@@ -316,7 +321,6 @@ class Ui_Dialog(object):
         """将选中的理符添加到table2"""
         self.pushButton_8.setEnabled(False)
         self.pushButton_9.setEnabled(False)
-        print(int(self.lva))
         if int(self.lva) == 90:
             return
         multiple = float(multiple)
@@ -342,12 +346,33 @@ class Ui_Dialog(object):
             new_checked_lifu.append(self.check_lifu[1])
             new_checked_lifu.append(self.check_lifu[2])
 
-            new_checked_lifu.append(count_exp)
-            new_checked_lifu.append(count_gil)
+            new_checked_lifu.append(int(count_exp))
+            new_checked_lifu.append(int(count_gil))
 
-            new_checked_lifu.append(self.check_lifu[5])
-            new_checked_lifu.append(multiple)
-            new_checked_lifu.append(multiple)
+            # 计算批发需求数量
+            if self.check_lifu[5][-1] in ("）", "3", "6", "9"):
+                magnification = 1
+                if self.check_lifu[5][-1] == "）":
+                    magnification = int(self.check_lifu[5][-3])
+                    self.check_lifu[5] = self.check_lifu[5][:-4]
+                    if self.check_lifu[5][-1] in ("3", "6", "9"):
+                        magnification = magnification * int(self.check_lifu[5][-1])
+                        self.check_lifu[5] = self.check_lifu[5][:-2]
+                        new_checked_lifu.append(self.check_lifu[5])
+                        new_checked_lifu.append(int(multiple)*magnification)
+                    else:
+                        new_checked_lifu.append(self.check_lifu[5])
+                        new_checked_lifu.append(int(multiple)*magnification)
+
+                else:   # x369结尾
+                    magnification = magnification * int(self.check_lifu[5][-1])
+                    self.check_lifu[5] = self.check_lifu[5][:-2]
+                    new_checked_lifu.append(self.check_lifu[5])
+                    new_checked_lifu.append(int(multiple) * magnification)
+            else:
+                new_checked_lifu.append(self.check_lifu[5])
+                new_checked_lifu.append(int(multiple))
+            new_checked_lifu.append(int(multiple))
 
             # 打印new_checked_lifu到列表table2
             row = self.tableWidget_2.rowCount()
@@ -378,40 +403,37 @@ class Ui_Dialog(object):
             gil = self.tableWidget_2.item(row, 4).text()
             goods_need = self.tableWidget_2.item(row, 6).text()
             count_lifu = self.tableWidget_2.item(row, 7).text()
+
+            # 倍率
+            magnification = int(goods_need)/int(count_lifu)
+
             # print('经验3，系统金4，道具需求数量6，已选择理符数量7' + exp + gil + goods_need + count_lifu)
             # 3.经验+self.check_lifu[3]*multiple，系统金+self.check_lifu[4]*multiple
             # 4.道具需求数量+multiple，已选择理符数量+multiple
-            exp = float(exp)
-            exp += count_exp
-            gil = float(gil)
-            gil += count_gil
-            goods_need = float(goods_need)
-            goods_need += multiple
-            count_lifu = float(count_lifu)
-            count_lifu += multiple
+            exp = int(exp)
+            exp += int(count_exp)
+            gil = int(gil)
+            gil += int(count_gil)
+            goods_need = int(goods_need)
+            goods_need += int(magnification)
+            count_lifu = int(count_lifu)
+            count_lifu += int(multiple)
 
             # 更新表格已有数据
-            self.tableWidget_2.item(row, 3).setText(str(exp))
-            self.tableWidget_2.item(row, 4).setText(str(gil))
-            self.tableWidget_2.item(row, 6).setText(str(goods_need))
-            self.tableWidget_2.item(row, 7).setText(str(count_lifu))
+            self.tableWidget_2.item(row, 3).setText(str(int(exp)))
+            self.tableWidget_2.item(row, 4).setText(str(int(gil)))
+            self.tableWidget_2.item(row, 6).setText(str(int(goods_need)))
+            self.tableWidget_2.item(row, 7).setText(str(int(count_lifu)))
 
         # 总数计算器左下角+gil lifu
-        self.con_lifu += multiple
-        self.gil += count_gil
+        self.con_lifu += int(multiple)
+        self.gil += int(count_gil)
         self.plainTextEdit_3.setPlainText(str(self.con_lifu))
         self.plainTextEdit_5.setPlainText(str(self.gil))
         # 更新经验模块
         self.get_exp(self.overflow_exp, count_exp)
         self.pushButton_8.setEnabled(True)
         self.pushButton_9.setEnabled(True)
-
-    def init_exp_bar(self):
-        # TODO 选择等级区间后，connect此方法  1.进度条显示当前等级经验条 2.显示0/当前升级所需经验
-        pass
-
-    def update_exp_bar(self):
-        pass
 
     def reset(self):
         for i in reversed(range(self.tableWidget_3.rowCount())):
@@ -433,7 +455,7 @@ class Ui_Dialog(object):
         self.plainTextEdit_5.setPlainText('0')
         self.textEdit_4.setPlainText('')
         self.textEdit_6.setPlainText('')
-        self.pushButton_8.setEnabled(True)
+        self.pushButton_8.setEnabled(False)
 
     def get_level(self):
         self.lva = self.textEdit.toPlainText()
@@ -485,9 +507,9 @@ class Ui_Dialog(object):
         item = self.tableWidget_2.horizontalHeaderItem(5)
         item.setText(_translate("Dialog", "道具名"))
         item = self.tableWidget_2.horizontalHeaderItem(6)
-        item.setText(_translate("Dialog", "道具需求数量"))
+        item.setText(_translate("Dialog", "道具数量"))
         item = self.tableWidget_2.horizontalHeaderItem(7)
-        item.setText(_translate("Dialog", "已选择理符数量"))
+        item.setText(_translate("Dialog", "理符数量"))
         item = self.tableWidget_3.horizontalHeaderItem(0)
         item.setText(_translate("Dialog", "等级"))
         item = self.tableWidget_3.horizontalHeaderItem(1)
