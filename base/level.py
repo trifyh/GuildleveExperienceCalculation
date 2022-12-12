@@ -24,9 +24,10 @@ class Exp(object):
 
     def __init__(self, lva, lvb):
         self.lva = lva
+        self.lvb = lvb
         self.lvlist = []
         self.exp = 0
-        for i in range(lva, lvb):
+        for i in range(lva, lvb + 1):
             self.lvlist.append(i)
 
     def expcal_all(self, overflow_exp, add_exp):
@@ -50,19 +51,23 @@ class Exp(object):
         current_need_exp = exp_list[i]  # 当前升级所需经验值
 
         while True:
-            if self.lva >= 89 and overflow_exp - current_need_exp >= 0:
-                return [90, 0, 0, 100]
+
+            if self.lva >= self.lvb-1 and overflow_exp - current_need_exp >= 0:
+                return [self.lvb, 0, 0, 100]
 
             elif overflow_exp < current_need_exp:    # 如果当前等级不够升级，跳过
-                return [current_level, overflow_exp, current_need_exp,
-                        round(overflow_exp/current_need_exp * 100, 2)]
-            else:       # 如果可以升级
 
+                rounda = round(overflow_exp/current_need_exp * 100, 2)
+                return [current_level, overflow_exp, current_need_exp, rounda]
+
+            elif overflow_exp >= current_need_exp:       # 如果可以升级
                 overflow_exp = overflow_exp - current_need_exp   # 溢出经验计算
                 i += 1
                 current_level = self.lvlist[i]
                 current_need_exp = exp_list[i]
+            else:
+                return [90, 0, 0, 100]
 
 
 if __name__ == '__main__':
-    print(Exp(1, 20).expcal_all(int(0), float(630.0)))
+    print(Exp(89, 90).expcal_all(int(0), float(225730000.0)))

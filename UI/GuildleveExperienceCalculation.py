@@ -158,7 +158,6 @@ class Ui_Dialog(object):
 
         self.tableWidget_3.setSelectionBehavior(QAbstractItemView.SelectRows)
 
-        intValidator = QIntValidator()
         # 列宽
         self.tableWidget_3.horizontalHeader().resizeSection(0, 30)
         self.tableWidget_3.horizontalHeader().resizeSection(1, 175)
@@ -312,16 +311,24 @@ class Ui_Dialog(object):
             for i in range(6):
                 content = self.tableWidget_3.item(row, i).text()
                 self.check_lifu.append(content)
-            # print(self.check_lifu)
         except:
-            # print('选中内容为空')
             pass
 
     def add_checked_lifu(self, multiple=1):
+        # 批量输入框输入类型和长度限制
+        try:
+            if int(multiple) > 999:
+                self.textEdit_3.setText("1")
+                return
+        except Exception as e:
+            print(e)
+            self.textEdit_3.setText("1")
+            return
+
         """将选中的理符添加到table2"""
         self.pushButton_8.setEnabled(False)
         self.pushButton_9.setEnabled(False)
-        if int(self.lva) == 90:
+        if int(self.lva) >= 90:
             return
         multiple = float(multiple)
         if '批发' in self.check_lifu[1]:
@@ -349,30 +356,25 @@ class Ui_Dialog(object):
             new_checked_lifu.append(int(count_exp))
             new_checked_lifu.append(int(count_gil))
 
-            # 计算批发需求数量
+            # 计算批发和乘n的需求数量
+            magnification = 1
             if self.check_lifu[5][-1] in ("）", "3", "6", "9"):
-                magnification = 1
                 if self.check_lifu[5][-1] == "）":
                     magnification = int(self.check_lifu[5][-3])
                     self.check_lifu[5] = self.check_lifu[5][:-4]
                     if self.check_lifu[5][-1] in ("3", "6", "9"):
                         magnification = magnification * int(self.check_lifu[5][-1])
                         self.check_lifu[5] = self.check_lifu[5][:-2]
-                        new_checked_lifu.append(self.check_lifu[5])
-                        new_checked_lifu.append(int(multiple)*magnification)
-                    else:
-                        new_checked_lifu.append(self.check_lifu[5])
-                        new_checked_lifu.append(int(multiple)*magnification)
-
                 else:   # x369结尾
                     magnification = magnification * int(self.check_lifu[5][-1])
                     self.check_lifu[5] = self.check_lifu[5][:-2]
-                    new_checked_lifu.append(self.check_lifu[5])
-                    new_checked_lifu.append(int(multiple) * magnification)
+
+            new_checked_lifu.append(self.check_lifu[5])
+            new_checked_lifu.append(int(multiple) * magnification)
+            if "大规模" == self.check_lifu[1][5:8]:
+                new_checked_lifu.append(int(multiple)*10)
             else:
-                new_checked_lifu.append(self.check_lifu[5])
                 new_checked_lifu.append(int(multiple))
-            new_checked_lifu.append(int(multiple))
 
             # 打印new_checked_lifu到列表table2
             row = self.tableWidget_2.rowCount()
@@ -405,7 +407,7 @@ class Ui_Dialog(object):
             count_lifu = self.tableWidget_2.item(row, 7).text()
 
             # 倍率
-            magnification = int(goods_need)/int(count_lifu)
+            magnification = int(goods_need)/int(count_lifu)*int(multiple)
 
             # print('经验3，系统金4，道具需求数量6，已选择理符数量7' + exp + gil + goods_need + count_lifu)
             # 3.经验+self.check_lifu[3]*multiple，系统金+self.check_lifu[4]*multiple
@@ -414,10 +416,22 @@ class Ui_Dialog(object):
             exp += int(count_exp)
             gil = int(gil)
             gil += int(count_gil)
+
+            count_lifu = int(count_lifu)
+            if "大规模" == self.tableWidget_2.item(row, 1).text()[5:8]:
+                magnification = magnification*10
+                count_lifu += int(multiple*10)
+            else:
+                count_lifu += int(multiple)
+
             goods_need = int(goods_need)
             goods_need += int(magnification)
-            count_lifu = int(count_lifu)
-            count_lifu += int(multiple)
+
+            print(exp)
+            print(gil)
+            print(goods_need)
+            print(count_lifu)
+            print(magnification)
 
             # 更新表格已有数据
             self.tableWidget_2.item(row, 3).setText(str(int(exp)))
@@ -426,11 +440,15 @@ class Ui_Dialog(object):
             self.tableWidget_2.item(row, 7).setText(str(int(count_lifu)))
 
         # 总数计算器左下角+gil lifu
-        self.con_lifu += int(multiple)
+        if "大规模" == self.check_lifu[1][5:8]:
+            self.con_lifu += int(multiple*10)
+        else:
+            self.con_lifu += int(multiple)
         self.gil += int(count_gil)
         self.plainTextEdit_3.setPlainText(str(self.con_lifu))
         self.plainTextEdit_5.setPlainText(str(self.gil))
         # 更新经验模块
+        # print("更新经验模块:" + str(self.overflow_exp) + "----" + str(count_exp))
         self.get_exp(self.overflow_exp, count_exp)
         self.pushButton_8.setEnabled(True)
         self.pushButton_9.setEnabled(True)
@@ -445,6 +463,7 @@ class Ui_Dialog(object):
         self.con_lifu = 0
         self.gil = 0
         self.textEdit.setText('1')
+        self.textEdit_3.setText('1')
         self.textEdit_2.setText('90')
         self.lva = self.textEdit.toPlainText()
         self.lvb = self.textEdit_2.toPlainText()
@@ -458,8 +477,19 @@ class Ui_Dialog(object):
         self.pushButton_8.setEnabled(False)
 
     def get_level(self):
-        self.lva = self.textEdit.toPlainText()
-        self.lvb = self.textEdit_2.toPlainText()
+        try:
+            self.lva = int(self.textEdit.toPlainText())
+            self.lvb = int(self.textEdit_2.toPlainText())
+            if self.lva > self.lvb or self.lva > 89 or self.lvb > 90:
+                self.textEdit.setText('1')
+                self.textEdit_2.setText('90')
+                self.lva = '1'
+                self.lvb = '90'
+        except:
+            self.textEdit.setText('1')
+            self.textEdit_2.setText('90')
+            self.lva = '1'
+            self.lvb = '90'
 
     def get_exp(self, overflow_exp, add_exp):
         """选择理符时更新经验模块"""
