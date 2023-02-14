@@ -360,11 +360,14 @@ class Ui_Dialog(object):
             magnification = 1
             if self.check_lifu[5][-1] in ("）", "3", "6", "9"):
                 if self.check_lifu[5][-1] == "）":
-                    magnification = int(self.check_lifu[5][-3])
-                    self.check_lifu[5] = self.check_lifu[5][:-4]
-                    if self.check_lifu[5][-1] in ("3", "6", "9"):
-                        magnification = magnification * int(self.check_lifu[5][-1])
-                        self.check_lifu[5] = self.check_lifu[5][:-2]
+                    try:
+                        magnification = int(self.check_lifu[5][-3])
+                        self.check_lifu[5] = self.check_lifu[5][:-4]
+                        if self.check_lifu[5][-1] in ("3", "6", "9"):
+                            magnification = magnification * int(self.check_lifu[5][-1])
+                            self.check_lifu[5] = self.check_lifu[5][:-2]
+                    except Exception as e:
+                        print(e)
                 else:   # x369结尾
                     magnification = magnification * int(self.check_lifu[5][-1])
                     self.check_lifu[5] = self.check_lifu[5][:-2]
