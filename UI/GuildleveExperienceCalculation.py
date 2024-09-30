@@ -14,9 +14,13 @@ from PyQt5.QtGui import QBrush, QColor, QIntValidator
 from PyQt5.QtWidgets import QAbstractItemView, QTableWidgetItem, QMessageBox
 from base.loadlifuxlsx import *
 from base.level import *
+from PyQt5.QtGui import QIcon, QCursor
+from PyQt5.Qt import QDesktopServices
+from PyQt5.QtCore import Qt, QUrl
 
 
 class Ui_Dialog(object):
+
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(985, 776)
@@ -152,6 +156,28 @@ class Ui_Dialog(object):
         self.pushButton_9 = QtWidgets.QPushButton(Dialog)
         self.pushButton_9.setGeometry(QtCore.QRect(880, 170, 51, 51))
         self.pushButton_9.setObjectName("pushButton_9")
+        # github
+        self.pushButton_11 = QtWidgets.QPushButton(Dialog)
+        self.pushButton_11.setGeometry(QtCore.QRect(880, 20, 41, 41))
+        self.pushButton_11.setObjectName("pushButton_11")
+        self.pushButton_11.setIcon(QIcon("../data/github.png"))
+        self.pushButton_11.setIconSize(QtCore.QSize(38, 38))
+        self.pushButton_11.setCursor(QCursor(Qt.PointingHandCursor))
+        # nga
+        self.pushButton_12 = QtWidgets.QPushButton(Dialog)
+        self.pushButton_12.setGeometry(QtCore.QRect(930, 20, 41, 41))
+        self.pushButton_12.setObjectName("pushButton_12")
+        self.pushButton_12.setIcon(QIcon("../data/nga.png"))
+        self.pushButton_12.setIconSize(QtCore.QSize(38, 38))
+        self.pushButton_12.setCursor(QCursor(Qt.PointingHandCursor))
+        # 爱发电
+        self.pushButton_13 = QtWidgets.QPushButton(Dialog)
+        self.pushButton_13.setGeometry(QtCore.QRect(930, 70, 41, 41))
+        self.pushButton_13.setObjectName("pushButton_13")
+        self.pushButton_13.setIcon(QIcon("../data/afd.png"))
+        self.pushButton_13.setIconSize(QtCore.QSize(38, 38))
+        self.pushButton_13.setCursor(QCursor(Qt.PointingHandCursor))
+
         self.textEdit_3 = QtWidgets.QTextEdit(Dialog)
         self.textEdit_3.setGeometry(QtCore.QRect(890, 230, 31, 31))
         self.textEdit_3.viewport().setProperty("cursor", QtGui.QCursor(QtCore.Qt.ArrowCursor))
@@ -525,6 +551,10 @@ class Ui_Dialog(object):
         msg_box.exec_()
 
 
+    def open_link(self, url):
+        QDesktopServices.openUrl(QUrl(url))
+
+
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "理符经验计算器"))
@@ -583,3 +613,7 @@ class Ui_Dialog(object):
         self.pushButton_8.setText(_translate("Dialog", "+"))
         self.pushButton_9.setText(_translate("Dialog", "-"))
         self.textEdit_3.setPlaceholderText(_translate("Dialog", "1"))
+        self.pushButton_11.clicked.connect(lambda: self.open_link("https://github.com/trifyh/GuildleveExperienceCalculation"))
+        self.pushButton_12.clicked.connect(lambda: self.open_link("https://nga.178.com/read.php?tid=34584673"))
+        self.pushButton_13.clicked.connect(lambda: self.open_link("https://afdian.com/a/haizhongyue"))
+
